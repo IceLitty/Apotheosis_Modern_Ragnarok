@@ -48,8 +48,8 @@ public class AdsPotionAffix extends PotionAffixBase implements AdsPickTargetHook
         super(definition, effect, target, values, types, stackOnReapply);
     }
 
-    public static final EnumProxy<Target> ADS_SELF_PROXY = new EnumProxy<>(Target.class, "ASD_SELF"); // Target.create("ADS_SELF", "ads_self");
-    public static final EnumProxy<Target> ADS_TARGET_PROXY = new EnumProxy<>(Target.class, "ASD_TARGET"); // Target.create("ADS_TARGET", "ads_target");
+    public static final EnumProxy<Target> ADS_SELF_PROXY = new EnumProxy<>(Target.class, "ADS_SELF");
+    public static final EnumProxy<Target> ADS_TARGET_PROXY = new EnumProxy<>(Target.class, "ADS_TARGET");
 
     @Override
     public void onAimingAtEntity(ItemStack stack, Player gunner, AffixInstance instance, EntityHitResult hit) {

@@ -19,8 +19,8 @@
   "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.arrow_target": "弹射物击中目标时，%s概率造成%s",
   "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.block_self": "格挡时，%s概率获得%s",
   "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.block_attacker": "格挡时，%s概率造成%s",
-  "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.ads_self": "瞄准目标时，获得%s",
-  "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.ads_target": "瞄准时，对你指向的目标施加%s",
+  "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.ADS_SELF": "瞄准目标时，获得%s",
+  "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.ADS_TARGET": "瞄准时，对你指向的目标施加%s",
 
   "affix.apotheosis_modern_ragnarok.spectral.gun.desc": "发射的子弹有%s概率点亮敌人",
 

@@ -19,8 +19,8 @@
   "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.arrow_target": "On gunshot hit, %s chance to inflict %s",
   "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.block_self": "Upon blocking, %s chance to gain %s",
   "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.block_attacker": "Upon blocking, %s chance to inflict %s",
-  "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.ads_self": "When aiming at target, gain %s",
-  "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.ads_target": "When aiming, inflict %s to the target you are looking at",
+  "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.ADS_SELF": "When aiming at target, gain %s",
+  "affix.apotheosis_modern_ragnarok.rated_potion_affix.target.ADS_TARGET": "When aiming, inflict %s to the target you are looking at",
 
   "affix.apotheosis_modern_ragnarok.spectral.gun.desc": "Your bullets have a %s chance to make its target glow.",
 
