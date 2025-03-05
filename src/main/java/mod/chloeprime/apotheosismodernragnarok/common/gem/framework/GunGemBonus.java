@@ -2,7 +2,7 @@ package mod.chloeprime.apotheosismodernragnarok.common.gem.framework;
 
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.EntityKillByGunEvent;
-import dev.shadowsoffire.apotheosis.adventure.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import mod.chloeprime.gunsmithlib.api.common.BulletCreateEvent;
 import net.minecraft.world.item.ItemStack;
 

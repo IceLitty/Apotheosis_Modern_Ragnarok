@@ -4,15 +4,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.EntityKillByGunEvent;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixType;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
+import dev.shadowsoffire.apotheosis.affix.AffixType;
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import mod.chloeprime.apotheosismodernragnarok.common.ModContent;
 import mod.chloeprime.apotheosismodernragnarok.common.affix.content.RatedPotionAffix;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -27,21 +29,22 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.IExtensibleEnum;
+import net.neoforged.fml.common.asm.enumextension.*;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 public abstract class PotionAffixBase extends AffixBaseUtility implements GunAffix {
-    protected final MobEffect effect;
+    protected final Holder<MobEffect> effect;
     protected final Target target;
     protected final Map<LootRarity, EffectData> values;
     protected final Set<LootCategory> types;
     protected final boolean stackOnReapply;
 
-    public PotionAffixBase(AffixType type, MobEffect effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply) {
-        super(type);
+    public PotionAffixBase(AffixDefinition definition, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply) {
+        super(definition);
         this.effect = effect;
         this.target = target;
         this.values = values;
@@ -55,7 +58,10 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
     }
 
     @Override
-    public void doPostHurt(ItemStack stack, LootRarity rarity, float level, LivingEntity user, Entity attacker) {
+    public void doPostHurt(AffixInstance inst, LivingEntity user, DamageSource source) {
+        LootRarity rarity = inst.getRarity();
+        float level = inst.level();
+        Entity attacker = source.getEntity();
         if (this.target == Target.HURT_SELF) this.applyEffect(user, rarity, level);
         else if (this.target == Target.HURT_ATTACKER) {
             if (attacker instanceof LivingEntity tLiving) {
@@ -65,7 +71,9 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
     }
 
     @Override
-    public void doPostAttack(ItemStack stack, LootRarity rarity, float level, LivingEntity user, Entity target) {
+    public void doPostAttack(AffixInstance inst, LivingEntity user, Entity target) {
+        LootRarity rarity = inst.getRarity();
+        float level = inst.level();
         if (this.target == Target.ATTACK_SELF) this.applyEffect(user, rarity, level);
         else if (this.target == Target.ATTACK_TARGET) {
             if (target instanceof LivingEntity tLiving) {
@@ -75,14 +83,16 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
     }
 
     @Override
-    public void onBlockBreak(ItemStack stack, LootRarity rarity, float level, Player player, LevelAccessor world, BlockPos pos, BlockState state) {
+    public void onBlockBreak(AffixInstance inst, Player player, LevelAccessor world, BlockPos pos, BlockState state) {
+        LootRarity rarity = inst.getRarity();
+        float level = inst.level();
         if (this.target == Target.BREAK_SELF) {
             this.applyEffect(player, rarity, level);
         }
     }
 
     @Override
-    public void onArrowImpact(AbstractArrow arrow, LootRarity rarity, float level, HitResult res, HitResult.Type type) {
+    public void onArrowImpact(float level, LootRarity rarity, AbstractArrow arrow, HitResult res, HitResult.Type type) {
         if (this.target == Target.ARROW_SELF) {
             if (arrow.getOwner() instanceof LivingEntity owner) {
                 this.applyEffect(owner, rarity, level);
@@ -128,7 +138,9 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
     }
 
     @Override
-    public float onShieldBlock(ItemStack stack, LootRarity rarity, float level, LivingEntity entity, DamageSource source, float amount) {
+    public float onShieldBlock(AffixInstance inst, LivingEntity entity, DamageSource source, float amount) {
+        LootRarity rarity = inst.getRarity();
+        float level = inst.level();
         if (this.target == Target.BLOCK_SELF) {
             this.applyEffect(entity, rarity, level);
         } else if (this.target == Target.BLOCK_ATTACKER && source.getDirectEntity() instanceof LivingEntity target) {
@@ -149,9 +161,11 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
         else {
             target.addEffect(data.build(this.effect, level));
         }
-        startCooldown(this.getId(), target);
+        startCooldown(this.id(), target);
     }
 
+    @NetworkedEnum(NetworkedEnum.NetworkCheck.BIDIRECTIONAL)
+//    @NamedEnum
     public enum Target implements IExtensibleEnum {
         ATTACK_SELF("attack_self"),
         ATTACK_TARGET("attack_target"),
@@ -163,7 +177,13 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
         BLOCK_SELF("block_self"),
         BLOCK_ATTACKER("block_attacker");
 
-        public static final Codec<Target> CODEC = PlaceboCodecs.enumCodec(Target.class);
+        private static Codec<Target> CODEC = null;
+        public static Codec<Target> getCodec() {
+            if (CODEC == null) {
+                CODEC = PlaceboCodecs.enumCodec(Target.class);
+            }
+            return CODEC;
+        }
 
         private final String id;
 
@@ -178,6 +198,10 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
         public MutableComponent toComponent(Object... args) {
             return Component.translatable("affix.apotheosis_modern_ragnarok.rated_potion_affix.target." + this.id, args);
         }
+
+        public static ExtensionInfo getExtensionInfo() {
+            return ExtensionInfo.nonExtended(Target.class);
+        }
     }
 
     public record EffectData(StepFunction duration, StepFunction amplifier, StepFunction cooldown, StepFunction rate) {
@@ -187,13 +211,13 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
 
         public static final Codec<RatedPotionAffix.EffectData> CODEC = RecordCodecBuilder.create(inst -> inst
                 .group(
-                        PlaceboCodecs.nullableField(StepFunction.CODEC,"duration", ONE_SECOND).forGetter(EffectData::duration),
+                        NeoForgeExtraCodecs.optionalFieldAlwaysWrite(StepFunction.CODEC,"duration", ONE_SECOND).forGetter(EffectData::duration),
                         StepFunction.CODEC.fieldOf("amplifier").forGetter(EffectData::amplifier),
-                        PlaceboCodecs.nullableField(StepFunction.CODEC,"cooldown", ZERO).forGetter(EffectData::cooldown),
-                        PlaceboCodecs.nullableField(StepFunction.CODEC,"rate", ONE).forGetter(EffectData::rate))
+                        NeoForgeExtraCodecs.optionalFieldAlwaysWrite(StepFunction.CODEC,"cooldown", ZERO).forGetter(EffectData::cooldown),
+                        NeoForgeExtraCodecs.optionalFieldAlwaysWrite(StepFunction.CODEC,"rate", ONE).forGetter(EffectData::rate))
                 .apply(inst, PotionAffixBase.EffectData::new));
 
-        public MobEffectInstance build(MobEffect effect, float level) {
+        public MobEffectInstance build(Holder<MobEffect> effect, float level) {
 
             return new MobEffectInstance(effect, this.duration.getInt(level), this.amplifier.getInt(level));
         }

@@ -2,8 +2,8 @@ package mod.chloeprime.apotheosismodernragnarok.common.eventhandlers;
 
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.GunDamageSourcePart;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootCategory;
-import dev.shadowsoffire.attributeslib.api.ALObjects;
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import mod.chloeprime.apotheosismodernragnarok.common.affix.framework.AbstractAffix;
 import mod.chloeprime.apotheosismodernragnarok.common.mob_effects.FireDotEffect;
 import net.minecraft.sounds.SoundEvents;
@@ -12,8 +12,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.Optional;
 import java.util.function.IntSupplier;
@@ -21,7 +21,7 @@ import java.util.function.IntSupplier;
 import static mod.chloeprime.apotheosismodernragnarok.ApotheosisModernRagnarok.loc;
 import static mod.chloeprime.apotheosismodernragnarok.common.ModContent.*;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class ElementalDamages {
     private ElementalDamages() {
     }
@@ -42,8 +42,8 @@ public class ElementalDamages {
             return;
         }
         var bullet = event.getDamageSource(GunDamageSourcePart.NON_ARMOR_PIERCING).getDirectEntity();
-        var fireDmg = (float) shooter.getAttributeValue(ALObjects.Attributes.FIRE_DAMAGE.get());
-        var coldDmg = (float) shooter.getAttributeValue(ALObjects.Attributes.COLD_DAMAGE.get());
+        var fireDmg = (float) shooter.getAttributeValue(ALObjects.Attributes.FIRE_DAMAGE);
+        var coldDmg = (float) shooter.getAttributeValue(ALObjects.Attributes.COLD_DAMAGE);
         if (fireDmg <= 0 && coldDmg <= 0) {
             return;
         }
@@ -89,7 +89,7 @@ public class ElementalDamages {
             pd.putFloat(PDKEY_LAST_FIRE_AMOUNT, value);
 
             var amplifier = Mth.clamp((int) value - 1, 0, 126);
-            living.addEffect(new MobEffectInstance(MobEffects.FIRE_DOT.get(), duration.getAsInt(), amplifier), shooter);
+            living.addEffect(new MobEffectInstance(MobEffects.FIRE_DOT, duration.getAsInt(), amplifier), shooter);
         }
     }
 
@@ -107,7 +107,7 @@ public class ElementalDamages {
         if (livingVictim.getRandom().nextFloat() > triggerRate) {
             return;
         }
-        var effect = MobEffects.FREEZE.get();
+        var effect = MobEffects.FREEZE;
         var amp = Optional.ofNullable(livingVictim.getEffect(effect))
                 .map(MobEffectInstance::getAmplifier)
                 .orElse(-1);

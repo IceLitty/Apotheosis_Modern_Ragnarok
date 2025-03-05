@@ -5,11 +5,12 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.EntityKillByGunEvent;
-import dev.shadowsoffire.attributeslib.AttributesLib;
-import dev.shadowsoffire.attributeslib.api.ALObjects;
-import dev.shadowsoffire.attributeslib.packet.CritParticleMessage;
-import dev.shadowsoffire.placebo.network.PacketDistro;
+import dev.shadowsoffire.apothic_attributes.api.ALObjects;
+import dev.shadowsoffire.apothic_attributes.payload.CritParticlePayload;
+import mod.chloeprime.apotheosismodernragnarok.ApotheosisModernRagnarok;
 import mod.chloeprime.apotheosismodernragnarok.common.ModContent;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -18,29 +19,29 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
 import java.util.function.Supplier;
 
-import static dev.shadowsoffire.attributeslib.api.ALObjects.Attributes.CRIT_CHANCE;
+import static dev.shadowsoffire.apothic_attributes.api.ALObjects.Attributes.CRIT_CHANCE;
 
 /**
  * 修复暴击暴伤判定对子弹的 2 段伤害分别判定的问题
  */
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class GunCritFix {
     private GunCritFix() {
     }
 
     public static final AttributeModifier AM = new AttributeModifier(
-            UUID.fromString("23814f79-3a57-4e69-8fd2-590bfc23f0e4"),
-            "Gun Crit Fix", -2000000000, AttributeModifier.Operation.ADDITION
+            ResourceLocation.fromNamespaceAndPath(ApotheosisModernRagnarok.MOD_ID, "gun_crit_fix"),
+            -2000000000, AttributeModifier.Operation.ADD_VALUE
     );
-    public static final Supplier<Multimap<Attribute, AttributeModifier>> AM_TABLE = Suppliers.memoize(
-            () -> ImmutableMultimap.of(CRIT_CHANCE.get(), AM)
+    public static final Supplier<Multimap<Holder<Attribute>, AttributeModifier>> AM_TABLE = Suppliers.memoize(
+            () -> ImmutableMultimap.of(CRIT_CHANCE, AM)
     );
 
     @SubscribeEvent
@@ -50,7 +51,7 @@ public class GunCritFix {
         }
         var shooter = event.getAttacker();
         var victim = event.getHurtEntity();
-        if (shooter == null || victim == null || shooter.getAttributeValue(CRIT_CHANCE.get()) <= 0) {
+        if (shooter == null || victim == null || shooter.getAttributeValue(CRIT_CHANCE) <= 0) {
             return;
         }
         rollCrit(event, shooter, victim);
@@ -58,8 +59,8 @@ public class GunCritFix {
     }
 
     private static void rollCrit(EntityHurtByGunEvent.Pre event, LivingEntity attacker, Entity victim) {
-        double critChance = attacker.getAttributeValue(ALObjects.Attributes.CRIT_CHANCE.get());
-        double critDmg = attacker.getAttributeValue(ALObjects.Attributes.CRIT_DAMAGE.get());
+        double critChance = attacker.getAttributeValue(ALObjects.Attributes.CRIT_CHANCE);
+        double critDmg = attacker.getAttributeValue(ALObjects.Attributes.CRIT_DAMAGE);
 
         RandomSource rand = event.getHurtEntity() instanceof LivingEntity le
                 ? le.getRandom()
@@ -78,7 +79,7 @@ public class GunCritFix {
         event.setBaseAmount(event.getBaseAmount() * (float) critMult);
 
         if (critMult > 1 && !attacker.level().isClientSide) {
-            PacketDistro.sendToTracking(AttributesLib.CHANNEL, new CritParticleMessage(victim.getId()), (ServerLevel) attacker.level(), victim.blockPosition());
+            PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) attacker.level(), victim.chunkPosition(), new CritParticlePayload(victim.getId()));
             // 播放暴击音效
             var snd = ModContent.Sounds.CRITICAL_HIT.get();
             var sndPitch = Mth.lerp(rand.nextFloat(), 0.8F, 1.25F);

@@ -12,14 +12,14 @@
       ]
     },
     "attribute": "gunsmithlib:bullet_damage",
-    "operation": "MULTIPLY_TOTAL",
+    "operation": "add_multiplied_total",
     "values": {
-      "common": 0.25,
-      "uncommon": 0.35,
-      "rare": 0.40,
-      "epic": 0.50,
-      "mythic": 0.60,
-      "ancient": 0.70
+      "cracked": 0.25,
+      "chipped": 0.35,
+      "flawed": 0.40,
+      "normal": 0.50,
+      "flawless": 0.60,
+      "perfect": 0.70
     }
   }]
 }

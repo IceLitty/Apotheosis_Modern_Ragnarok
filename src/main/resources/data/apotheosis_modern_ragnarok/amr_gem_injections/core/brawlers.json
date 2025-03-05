@@ -12,14 +12,14 @@
       ]
     },
     "attribute": "minecraft:generic.attack_damage",
-    "operation": "ADDITION",
+    "operation": "add_value",
     "values": {
-      "common": 1,
-      "uncommon": 2,
-      "rare": 3.5,
-      "epic": 5,
-      "mythic": 7,
-      "ancient": 10
+      "cracked": 1,
+      "chipped": 2,
+      "flawed": 3.5,
+      "normal": 5,
+      "flawless": 7,
+      "perfect": 10
     }
   }]
 }

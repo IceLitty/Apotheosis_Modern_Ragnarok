@@ -1,13 +1,13 @@
 package mod.chloeprime.apotheosismodernragnarok.common.affix.framework;
 
-import dev.shadowsoffire.apotheosis.adventure.affix.Affix;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixType;
+import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 public abstract class AffixBaseUtility extends Affix {
-    public AffixBaseUtility(AffixType type) {
-        super(type);
+    public AffixBaseUtility(AffixDefinition definition) {
+        super(definition);
     }
 
     public static String fmt(double value) {

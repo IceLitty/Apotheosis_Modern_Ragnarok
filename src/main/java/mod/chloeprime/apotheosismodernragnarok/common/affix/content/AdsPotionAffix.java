@@ -2,16 +2,18 @@ package mod.chloeprime.apotheosismodernragnarok.common.affix.content;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.shadowsoffire.apotheosis.adventure.affix.Affix;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixType;
-import dev.shadowsoffire.apotheosis.adventure.affix.effect.PotionAffix;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
+import dev.shadowsoffire.apotheosis.affix.AffixType;
+import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix;
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import mod.chloeprime.apotheosismodernragnarok.common.ModContent;
 import mod.chloeprime.apotheosismodernragnarok.common.affix.framework.AdsPickTargetHookAffix;
 import mod.chloeprime.apotheosismodernragnarok.common.affix.framework.PotionAffixBase;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.effect.MobEffect;
@@ -20,7 +22,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.fml.common.asm.enumextension.EnumProxy;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,19 +36,20 @@ import java.util.Set;
 public class AdsPotionAffix extends PotionAffixBase implements AdsPickTargetHookAffix {
     public static final Codec<AdsPotionAffix> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(
-                    ForgeRegistries.MOB_EFFECTS.getCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
-                    Target.CODEC.fieldOf("target").forGetter(a -> a.target),
+                    AffixDefinition.CODEC.fieldOf("definition").forGetter(Affix::definition),
+                    BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
+                    Target.getCodec().fieldOf("target").forGetter(a -> a.target),
                     LootRarity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
                     LootCategory.SET_CODEC.fieldOf("types").forGetter(a -> a.types),
-                    PlaceboCodecs.nullableField(Codec.BOOL, "stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
+                    NeoForgeExtraCodecs.optionalFieldAlwaysWrite(Codec.BOOL, "stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
             .apply(inst, AdsPotionAffix::new));
 
-    public AdsPotionAffix(MobEffect effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply) {
-        super(AffixType.ABILITY, effect, target, values, types, stackOnReapply);
+    public AdsPotionAffix(AffixDefinition definition, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply) {
+        super(definition, effect, target, values, types, stackOnReapply);
     }
 
-    private static final Target ADS_SELF = Target.create("ADS_SELF", "ads_self");
-    private static final Target ADS_TARGET = Target.create("ADS_TARGET", "ads_target");
+    public static final EnumProxy<Target> ADS_SELF_PROXY = new EnumProxy<>(Target.class, "ASD_SELF"); // Target.create("ADS_SELF", "ads_self");
+    public static final EnumProxy<Target> ADS_TARGET_PROXY = new EnumProxy<>(Target.class, "ASD_TARGET"); // Target.create("ADS_TARGET", "ads_target");
 
     @Override
     public void onAimingAtEntity(ItemStack stack, Player gunner, AffixInstance instance, EntityHitResult hit) {
@@ -55,18 +61,20 @@ public class AdsPotionAffix extends PotionAffixBase implements AdsPickTargetHook
             return;
         }
 
-        if (target == ADS_SELF) {
+        if (target == ADS_SELF_PROXY.getValue()) {
             applyEffect(gunner, instance.rarity().get(), instance.level());
-        } else if (target == ADS_TARGET) {
+        } else if (target == ADS_TARGET_PROXY.getValue()) {
             applyEffect(victim, instance.rarity().get(), instance.level());
         }
 
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
+    public MutableComponent getDescription(AffixInstance _inst, AttributeTooltipContext ctx) {
+        LootRarity rarity = _inst.getRarity();
+        float level = _inst.level();
         MobEffectInstance inst = this.values.get(rarity).build(this.effect, level);
-        MutableComponent comp = this.target.toComponent(PotionAffix.toComponent(inst));
+        MutableComponent comp = this.target.toComponent(MobEffectAffix.toComponent(inst, level));
         if (this.stackOnReapply) {
             comp = comp.append(" ").append(Component.translatable("affix.apotheosis.stacking"));
         }
@@ -74,9 +82,11 @@ public class AdsPotionAffix extends PotionAffixBase implements AdsPickTargetHook
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
+    public Component getAugmentingText(AffixInstance _inst, AttributeTooltipContext ctx) {
+        LootRarity rarity = _inst.getRarity();
+        float level = _inst.level();
         MobEffectInstance inst = this.values.get(rarity).build(this.effect, level);
-        MutableComponent comp = this.target.toComponent(PotionAffix.toComponent(inst));
+        MutableComponent comp = this.target.toComponent(MobEffectAffix.toComponent(inst, level));
 
         MobEffectInstance min = this.values.get(rarity).build(this.effect, 0);
         MobEffectInstance max = this.values.get(rarity).build(this.effect, 1);

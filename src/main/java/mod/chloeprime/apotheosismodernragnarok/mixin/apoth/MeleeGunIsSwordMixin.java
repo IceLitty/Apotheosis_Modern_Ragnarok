@@ -1,7 +1,7 @@
 package mod.chloeprime.apotheosismodernragnarok.mixin.apoth;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import mod.chloeprime.apotheosismodernragnarok.common.affix.category.GunPredicate;
 import net.minecraft.world.item.ItemStack;
 import org.objectweb.asm.Opcodes;
@@ -15,12 +15,12 @@ public class MeleeGunIsSwordMixin {
             method = "forItem",
             at = @At(value = "INVOKE", ordinal = 0, target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"),
             slice = @Slice(
-                    from = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Ldev/shadowsoffire/apotheosis/adventure/AdventureConfig;TYPE_OVERRIDES:Ljava/util/Map;"),
+                    from = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Ldev/shadowsoffire/apotheosis/AdventureConfig;TYPE_OVERRIDES:Ljava/util/Map;"),
                     to = @At("TAIL")
             ))
     private static Object overrideLootCategory(Object original, ItemStack item) {
         if (original == null && GunPredicate.isMeleeGun(item)) {
-            return LootCategory.SWORD;
+            return LootCategory.MELEE_WEAPON;
         }
         return original;
     }

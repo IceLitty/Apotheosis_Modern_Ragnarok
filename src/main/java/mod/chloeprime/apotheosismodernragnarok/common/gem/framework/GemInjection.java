@@ -2,7 +2,7 @@ package mod.chloeprime.apotheosismodernragnarok.common.gem.framework;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.shadowsoffire.apotheosis.adventure.socket.gem.bonus.GemBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import net.minecraft.resources.ResourceLocation;
 

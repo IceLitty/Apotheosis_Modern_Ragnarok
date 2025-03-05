@@ -12,6 +12,13 @@ loaderVersion="${loader_version_range}" #mandatory This is typically bumped ever
 license="${mod_license}"
 # A URL to refer people to when problems occur with this mod
 #issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+
+[[mixins]]
+config="apotheosis_modern_ragnarok.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
@@ -38,16 +45,20 @@ authors="${mod_authors}" #optional
 # IMPORTANT NOTE: this is NOT an instruction as to which environments (CLIENT or DEDICATED SERVER) your mod loads on. Your mod should load (and maybe do nothing!) whereever it finds itself.
 #displayTest="MATCH_VERSION" # MATCH_VERSION is the default if nothing is specified (#optional)
 
+## The file is relative to the output directory of the resources, or the root path inside the jar when compiled
+## The 'resources' directory represents the root output directory of the resources
+enumExtensions="META-INF/enumextensions.json"
+
 # The description text for the mod (multi line!) (#mandatory)
 description='''${mod_description}'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.${mod_id}]] #optional
    # the modid of the dependency
-   modId="forge" #mandatory
+   modId="neoforge" #mandatory
    # Does this dependency have to exist - if not, ordering below must be specified
-   mandatory=true #mandatory
+   type="required" #mandatory
    # The version range of the dependency
-   versionRange="${forge_version_range}" #mandatory
+   versionRange = "[21.1.0,)" #mandatory
    # An ordering relationship for the dependency - BEFORE or AFTER required if the dependency is not mandatory
    # BEFORE - This mod is loaded BEFORE the dependency
    # AFTER - This mod is loaded AFTER the dependency
@@ -56,23 +67,23 @@ description='''${mod_description}'''
    side="BOTH"# Here's another dependency
 [[dependencies.${mod_id}]]
    modId="minecraft"
-   mandatory=true
+   type="required"
    # This version range declares a minimum of the current minecraft version up to but not including the next major version
    versionRange="${minecraft_version_range}"
    ordering="NONE"
    side="BOTH"
 [[dependencies.${mod_id}]]
    modId="apotheosis"
-   mandatory=true
+   type="required"
    # This version range declares a minimum of the current minecraft version up to but not including the next major version
-   versionRange="[7.4,)"
+   versionRange="[8.0.0,)"
    ordering="AFTER"
    side="BOTH"
 [[dependencies.${mod_id}]]
    modId="tacz"
-   mandatory=true
+   type="required"
    # This version range declares a minimum of the current minecraft version up to but not including the next major version
-   versionRange="[1.1.4,)"
+   versionRange="*"
    ordering="NONE"
    side="BOTH"
 

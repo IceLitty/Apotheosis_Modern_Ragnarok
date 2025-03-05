@@ -7,11 +7,8 @@ import com.tacz.guns.client.resource.serialize.Vector3fSerializer;
 import mod.chloeprime.apotheosismodernragnarok.ApotheosisModernRagnarok;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector3f;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
 public class MagicalShotAffixVisuals {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Vector3f.class, new Vector3fSerializer())

@@ -11,15 +11,15 @@
           "apotheosis_modern_ragnarok:shotgun"
         ]
       },
-      "attribute": "attributeslib:crit_chance",
-      "operation": "ADDITION",
+      "attribute": "apothic_attributes:crit_chance",
+      "operation": "add_value",
       "values": {
-        "common": 0.05,
-        "uncommon": 0.15,
-        "rare": 0.25,
-        "epic": 0.35,
-        "mythic": 0.40,
-        "ancient": 0.45
+        "cracked": 0.05,
+        "chipped": 0.15,
+        "flawed": 0.25,
+        "normal": 0.35,
+        "flawless": 0.40,
+        "perfect": 0.45
       }
     },
     {
@@ -30,15 +30,15 @@
           "apotheosis_modern_ragnarok:bolt_action"
         ]
       },
-      "attribute": "attributeslib:crit_chance",
-      "operation": "ADDITION",
+      "attribute": "apothic_attributes:crit_chance",
+      "operation": "add_value",
       "values": {
-        "common": 0.10,
-        "uncommon": 0.25,
-        "rare": 0.35,
-        "epic": 0.40,
-        "mythic": 0.475,
-        "ancient": 0.65
+        "cracked": 0.10,
+        "chipped": 0.25,
+        "flawed": 0.35,
+        "normal": 0.40,
+        "flawless": 0.475,
+        "perfect": 0.65
       }
     }
   ]

@@ -1,0 +1,26 @@
+{
+    "entries": [
+        {
+            // The enum class the entry should be added to
+            "enum": "mod/chloeprime/apotheosismodernragnarok/common/affix/framework/PotionAffixBase$Target",
+            // The field name of the new entry, must be prefixed with the mod ID
+            "name": "APOTHEOSIS_MODERN_RAGNAROK_ADS_SELF",
+            // The constructor to be used
+            "constructor": "(Ljava/lang/String;)V",
+            // Constant parameters provided directly.
+            "parameters": {
+                "class": "mod/chloeprime/apotheosismodernragnarok/common/affix/content/AdsPotionAffix",
+                "field": "ADS_SELF_PROXY"
+            }
+        },
+        {
+            "enum": "mod/chloeprime/apotheosismodernragnarok/common/affix/framework/PotionAffixBase$Target",
+            "name": "APOTHEOSIS_MODERN_RAGNAROK_ADS_TARGET",
+            "constructor": "(Ljava/lang/String;)V",
+            "parameters": {
+                "class": "mod/chloeprime/apotheosismodernragnarok/common/affix/content/AdsPotionAffix",
+                "field": "ADS_TARGET_PROXY"
+            }
+        }
+    ]
+}

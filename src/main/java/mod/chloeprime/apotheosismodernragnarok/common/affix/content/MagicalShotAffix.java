@@ -4,12 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.GunDamageSourcePart;
-import dev.shadowsoffire.apotheosis.adventure.affix.Affix;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixType;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.affix.*;
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import mod.chloeprime.apotheosismodernragnarok.common.ModContent;
 import mod.chloeprime.apotheosismodernragnarok.common.affix.framework.AbstractAffix;
@@ -22,8 +19,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.*;
 
@@ -32,7 +29,7 @@ import static com.tacz.guns.entity.EntityKineticBullet.TRACER_SIZE_OVERRIDER_KEY
 import static mod.chloeprime.apotheosismodernragnarok.ApotheosisModernRagnarok.loc;
 import static net.minecraft.tags.DamageTypeTags.*;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class MagicalShotAffix extends DummySpecialAffix implements GunAffix {
     public static final DynamicHolder<MagicalShotAffix> AFFIX = ModContent.Affix.MAGICAL_SHOT;
 
@@ -53,6 +50,7 @@ public class MagicalShotAffix extends DummySpecialAffix implements GunAffix {
 
     public static final Codec<MagicalShotAffix> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(
+                    AffixDefinition.CODEC.fieldOf("definition").forGetter(Affix::definition),
                     LootCategory.SET_CODEC.fieldOf("types").forGetter(AbstractAffix::getApplicableCategories),
                     SOUND_CODEC.fieldOf("sounds").forGetter(a -> a.sounds),
                     LootRarity.CODEC.fieldOf("min_rarity").forGetter(a -> a.minRarity))
@@ -66,7 +64,7 @@ public class MagicalShotAffix extends DummySpecialAffix implements GunAffix {
 
     public Optional<SoundEvent> getSoundFor(LootCategory category) {
         var holder = sounds.get(category);
-        return holder.isBound() ? Optional.of(holder.get()) : Optional.empty();
+        return holder.isBound() ? Optional.of(holder.value()) : Optional.empty();
     }
 
     public static Optional<SoundEvent> getSoundFor(ItemStack gun) {
@@ -119,8 +117,8 @@ public class MagicalShotAffix extends DummySpecialAffix implements GunAffix {
         return CODEC;
     }
 
-    public MagicalShotAffix(Set<LootCategory> categories, Map<LootCategory, Holder<SoundEvent>> sounds, LootRarity minRarity) {
-        super(AffixType.ABILITY, categories, minRarity);
+    public MagicalShotAffix(AffixDefinition definition, Set<LootCategory> categories, Map<LootCategory, Holder<SoundEvent>> sounds, LootRarity minRarity) {
+        super(definition, categories, minRarity);
         this.sounds = sounds;
     }
 }

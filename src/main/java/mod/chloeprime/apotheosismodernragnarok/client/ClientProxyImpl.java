@@ -5,8 +5,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 class ClientProxyImpl {
     @OnlyIn(Dist.CLIENT)

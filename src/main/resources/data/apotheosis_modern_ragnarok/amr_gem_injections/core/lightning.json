@@ -12,14 +12,14 @@
       ]
     },
     "attribute": "gunsmithlib:bullet_speed",
-    "operation": "MULTIPLY_BASE",
+    "operation": "add_multiplied_base",
     "values": {
-      "common": 0.1,
-      "uncommon": 0.3,
-      "rare": 0.5,
-      "epic": 0.7,
-      "mythic": 0.85,
-      "ancient": 1.1
+      "cracked": 0.1,
+      "chipped": 0.3,
+      "flawed": 0.5,
+      "normal": 0.7,
+      "flawless": 0.85,
+      "perfect": 1.1
     }
   }]
 }

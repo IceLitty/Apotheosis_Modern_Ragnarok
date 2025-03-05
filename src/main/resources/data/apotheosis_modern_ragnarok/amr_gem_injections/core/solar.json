@@ -10,15 +10,15 @@
           "apotheosis_modern_ragnarok:semi_auto"
         ]
       },
-      "attribute": "attributeslib:fire_damage",
-      "operation": "ADDITION",
+      "attribute": "apothic_attributes:fire_damage",
+      "operation": "add_value",
       "values": {
-        "common": 1,
-        "uncommon": 1.5,
-        "rare": 2.5,
-        "epic": 4,
-        "mythic": 6,
-        "ancient": 8
+        "cracked": 1,
+        "chipped": 1.5,
+        "flawed": 2.5,
+        "normal": 4,
+        "flawless": 6,
+        "perfect": 8
       }
     },
     {
@@ -29,15 +29,15 @@
           "apotheosis_modern_ragnarok:shotgun"
         ]
       },
-      "attribute": "attributeslib:fire_damage",
-      "operation": "ADDITION",
+      "attribute": "apothic_attributes:fire_damage",
+      "operation": "add_value",
       "values": {
-        "common": 0.2,
-        "uncommon": 0.3,
-        "rare": 0.5,
-        "epic": 0.8,
-        "mythic": 1.2,
-        "ancient": 1.6
+        "cracked": 0.2,
+        "chipped": 0.3,
+        "flawed": 0.5,
+        "normal": 0.8,
+        "flawless": 1.2,
+        "perfect": 1.6
       }
     },
     {
@@ -48,15 +48,15 @@
           "apotheosis_modern_ragnarok:bolt_action"
         ]
       },
-      "attribute": "attributeslib:fire_damage",
-      "operation": "ADDITION",
+      "attribute": "apothic_attributes:fire_damage",
+      "operation": "add_value",
       "values": {
-        "common": 2.5,
-        "uncommon": 3.75,
-        "rare": 6.25,
-        "epic": 10,
-        "mythic": 15,
-        "ancient": 20
+        "cracked": 2.5,
+        "chipped": 3.75,
+        "flawed": 6.25,
+        "normal": 10,
+        "flawless": 15,
+        "perfect": 20
       }
     }
   ]

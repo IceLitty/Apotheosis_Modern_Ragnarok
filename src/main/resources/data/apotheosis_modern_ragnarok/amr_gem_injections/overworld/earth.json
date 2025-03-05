@@ -15,10 +15,10 @@
       "enchantment": "looting",
       "must_exist": false,
       "values": {
-        "rare": 2,
-        "epic": 3,
-        "mythic": 5,
-        "ancient": 8
+        "flawed": 2,
+        "normal": 3,
+        "flawless": 5,
+        "perfect": 8
       }
     }
   ]

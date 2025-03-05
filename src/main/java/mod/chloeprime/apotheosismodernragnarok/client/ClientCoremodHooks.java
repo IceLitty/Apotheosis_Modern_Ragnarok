@@ -15,8 +15,8 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;

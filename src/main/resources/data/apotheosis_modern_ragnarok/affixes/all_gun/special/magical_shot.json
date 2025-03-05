@@ -1,5 +1,12 @@
 {
   "type": "apotheosis_modern_ragnarok:magical_shot",
+  "definition": {
+    "affix_type": "ability",
+    "exclusive_set": [],
+    "weights": {
+      "weight": 25
+    }
+  },
   "min_rarity": "apotheosis:epic",
   "types": [
     "apotheosis_modern_ragnarok:shotgun",

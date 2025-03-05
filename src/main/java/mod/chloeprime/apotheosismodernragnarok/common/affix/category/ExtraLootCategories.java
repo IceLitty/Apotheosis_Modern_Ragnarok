@@ -3,10 +3,10 @@ package mod.chloeprime.apotheosismodernragnarok.common.affix.category;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import mod.chloeprime.apotheosismodernragnarok.ApotheosisModernRagnarok;
 import mod.chloeprime.apotheosismodernragnarok.common.CommonConfig;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Collections;
@@ -19,6 +19,7 @@ public class ExtraLootCategories {
     public static LootCategory FULL_AUTO;
     public static LootCategory SEMI_AUTO;
     public static LootCategory BOLT_ACTION;
+    public static LootCategory HEAVY_WEAPON;
 
     public static Set<LootCategory> all() {
         return Collections.unmodifiableSet(ALL_GUNS);
@@ -29,10 +30,11 @@ public class ExtraLootCategories {
     }
 
     public static void init() {
-        BOLT_ACTION = register("bolt_action", GunPredicate.matchIndex(ExtraLootCategories::isBoltAction).and(ExtraLootCategories::isBoltActionShotgunBoltAction), EquipmentSlot.MAINHAND);
-        SHOTGUN     = register("shotgun",     GunPredicate.matchIndex(index -> index.getBulletData().getBulletAmount() > 4), EquipmentSlot.MAINHAND);
-        FULL_AUTO   = register("full_auto",   GunPredicate.supports(FireMode.AUTO), EquipmentSlot.MAINHAND);
-        SEMI_AUTO   = register("semi_auto",   GunPredicate.supports(FireMode.SEMI, FireMode.BURST), EquipmentSlot.MAINHAND);
+        BOLT_ACTION = register("bolt_action", GunPredicate.matchIndex(ExtraLootCategories::isBoltAction).and(ExtraLootCategories::isBoltActionShotgunBoltAction), EquipmentSlotGroup.MAINHAND, true);
+        SHOTGUN     = register("shotgun",     GunPredicate.matchIndex(index -> index.getBulletData().getBulletAmount() > 4), EquipmentSlotGroup.MAINHAND, true);
+        FULL_AUTO   = register("full_auto",   GunPredicate.supports(FireMode.AUTO), EquipmentSlotGroup.MAINHAND, true);
+        SEMI_AUTO   = register("semi_auto",   GunPredicate.supports(FireMode.SEMI, FireMode.BURST), EquipmentSlotGroup.MAINHAND, true);
+        HEAVY_WEAPON= register("heavy_weapon",new ShieldBreakerTest(), EquipmentSlotGroup.MAINHAND, false);
     }
 
     public static boolean isBoltAction(CommonGunIndex index) {
@@ -52,9 +54,11 @@ public class ExtraLootCategories {
 
     private static final Set<LootCategory> ALL_GUNS = new LinkedHashSet<>(8);
 
-    private static LootCategory register(String path, Predicate<ItemStack> predicate, EquipmentSlot... slots) {
+    private static LootCategory register(String path, Predicate<ItemStack> predicate, EquipmentSlotGroup slots, boolean isGun) {
         var registered = LootCategory.register(null, ApotheosisModernRagnarok.loc(path).toString(), predicate, slots);
-        ALL_GUNS.add(registered);
+        if (isGun) {
+            ALL_GUNS.add(registered);
+        }
         return registered;
     }
 }

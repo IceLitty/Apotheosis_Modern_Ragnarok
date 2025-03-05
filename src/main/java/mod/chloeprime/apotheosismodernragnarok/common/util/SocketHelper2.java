@@ -1,8 +1,8 @@
 package mod.chloeprime.apotheosismodernragnarok.common.util;
 
-import dev.shadowsoffire.apotheosis.adventure.socket.SocketHelper;
-import dev.shadowsoffire.apotheosis.adventure.socket.gem.GemInstance;
-import dev.shadowsoffire.apotheosis.adventure.socket.gem.bonus.GemBonus;
+import dev.shadowsoffire.apotheosis.socket.SocketHelper;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import mod.chloeprime.apotheosismodernragnarok.mixin.apoth.GemInstanceAccessor;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;

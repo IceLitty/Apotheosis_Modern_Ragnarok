@@ -1,9 +1,10 @@
 package mod.chloeprime.apotheosismodernragnarok.common.affix.framework;
 
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixType;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
+import dev.shadowsoffire.apotheosis.affix.AffixType;
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.world.item.ItemStack;
 
@@ -13,10 +14,10 @@ import java.util.Set;
 
 public abstract class AbstractValuedAffix extends AbstractAffix {
     public AbstractValuedAffix(
-            AffixType type,
+            AffixDefinition definition,
             Set<LootCategory> categories,
             Map<LootRarity, StepFunction> values) {
-        super(type, categories);
+        super(definition, categories);
         this.values = values;
     }
 

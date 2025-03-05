@@ -10,13 +10,21 @@ buildscript {
 }
 
 plugins {
+    id 'java-library'
     id 'eclipse'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'net.neoforged.gradle.userdev' version '7.0.170'
+    id 'net.neoforged.gradle.mixin' version '7.0.170'
 }
 
-apply plugin: 'org.spongepowered.mixin'
+tasks.named('wrapper', Wrapper).configure {
+    // Define wrapper values here so as to not have to always do so when updating gradlew.properties.
+    // Switching this to Wrapper.DistributionType.ALL will download the full gradle sources that comes with
+    // documentation attached on cursor hover of gradle classes and methods. However, this comes with increased
+    // file size for Gradle. If you do switch this to ALL, run the Gradle wrapper task twice afterwards.
+    // (Verify by checking gradle/wrapper/gradle-wrapper.properties to see if distributionUrl now points to `-all`)
+    distributionType = Wrapper.DistributionType.BIN
+}
 
 boolean USE_LOCAL_TACZ_V = Boolean.parseBoolean(USE_LOCAL_TACZ)
 
@@ -28,106 +36,64 @@ base {
     archivesName = mod_id
 }
 
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
-}
+// Mojang ships Java 21 to end users starting in 1.20.5, so mods should target Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-minecraft {
-    // The mappings can be changed at any time and must be in the following format.
-    // Channel:   Version:
-    // official   MCVersion             Official field/method names from Mojang mapping files
-    // parchment  YYYY.MM.DD-MCVersion  Open community-sourced parameter names and javadocs layered on top of official
-    //
-    // You must be aware of the Mojang license when using the 'official' or 'parchment' mappings.
-    // See more information here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
-    //
-    // Parchment is an unofficial project maintained by ParchmentMC, separate from MinecraftForge
-    // Additional setup is needed to use their mappings: https://parchmentmc.org/docs/getting-started
-    //
-    // Use non-default mappings at your own risk. They may not always work.
-    // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: mapping_channel, version: mapping_version
-
-    // When true, this property will have all Eclipse/IntelliJ IDEA run configurations run the "prepareX" task for the given run configuration before launching the game.
-    // enableEclipsePrepareRuns = true
-    // enableIdeaPrepareRuns = true
-
-    // This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before launching the game.
-    // It is REQUIRED to be set to true for this template to function.
-    // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
-    copyIdeResources = true
-
-    // When true, this property will add the folder name of all declared run configurations to generated IDE run configurations.
-    // The folder name can be set on a run configuration using the "folderName" property.
-    // By default, the folder name of a run configuration is the name of the Gradle project containing it.
-    // generateRunFolders = true
-
-    // This property enables access transformers for use in development.
-    // They will be applied to the Minecraft artifact.
-    // The access transformer file can be anywhere in the project.
-    // However, it must be at "META-INF/accesstransformer.cfg" in the final mod jar to be loaded by Forge.
-    // This default location is a best practice to automatically put the file in the right place in the final jar.
-    // See https://docs.minecraftforge.net/en/latest/advanced/accesstransformers/ for more information.
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs {
-        // applies to all the run configs below
-        configureEach {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'REGISTRIES'
-
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-//            args '--nogui'
-        }
-
-        // This run config launches GameTestServer and runs all registered gametests, then exits.
-        // By default, the server will crash when no gametests are provided.
-        // The gametest system is also enabled by default for other run configs under the /test command.
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        data {
-            // example of overriding the workingDirectory set in configureEach above
-            workingDirectory project.file('run-data')
-
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-        }
-    }
-}
+minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
 
 mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-
     config "${mod_id}.mixins.json"
+//    add sourceSets.main, "${mod_id}.refmap.json"
+}
+
+// Default run configurations.
+// These can be tweaked, removed, or duplicated as needed.
+runs {
+    // applies to all the run configs below
+    configureEach {
+        workingDirectory project.file('run')
+
+        // Recommended logging data for a userdev environment
+        // The markers can be added/remove as needed separated by commas.
+        // "SCAN": For mods scan.
+        // "REGISTRIES": For firing of registry events.
+        // "REGISTRYDUMP": For getting the contents of all registries.
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+
+
+        // Recommended logging level for the console
+        // You can set various levels here.
+        // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+        systemProperty 'forge.logging.console.level', 'debug'
+
+        modSource project.sourceSets.main
+    }
+
+    client {
+        // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+        programArguments.addAll '--width', '400', '--height', '200'
+    }
+
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+        programArgument '--nogui'
+    }
+
+    // This run config launches GameTestServer and runs all registered gametests, then exits.
+    // By default, the server will crash when no gametests are provided.
+    // The gametest system is also enabled by default for other run configs under the /test command.
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
+
+    data {
+        // example of overriding the workingDirectory set in configureEach above
+        workingDirectory project.file('run-data')
+
+        // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+        programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
 }
 
 // Include resources generated by data generators.
@@ -149,7 +115,6 @@ repositories {
                 url = "https://api.modrinth.com/maven"
             }
         }
-        forRepositories(fg.repository) // Only add this if you're using ForgeGradle, otherwise remove this line
         filter {
             includeGroup "maven.modrinth"
         }
@@ -170,10 +135,15 @@ repositories {
             includeGroup("com.eliotlash.mclib")
         }
     }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
+    maven { url 'https://maven.blamejared.com' }
 
-    if (file('../GunsmithLib').exists()) {
+    // directory name is local folder, must equals
+    if (file('../GunsmithLib-Fork').exists()) {
         flatDir {
-            dir '../GunsmithLib/build/libs'
+            dir '../GunsmithLib-Fork/build/libs'
         }
     }
 
@@ -183,40 +153,36 @@ repositories {
 }
 
 dependencies {
-    // Specify the version of Minecraft to use.
-    // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
-    // The "userdev" classifier will be requested and setup by ForgeGradle.
-    // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
-    // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation "net.neoforged:neoforge:${neo_version}"
 
-//    implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
+//    implementation("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
 //    implementation("com.eliotlash.mclib:mclib:20")
 
-    implementation fg.deobf("dev.shadowsoffire:Apotheosis:${minecraft_version}-${apoth_version}")
-    implementation fg.deobf("dev.shadowsoffire:ApothicAttributes:${minecraft_version}-${apoth_attributes_version}")
-    implementation fg.deobf("dev.shadowsoffire:Placebo:${minecraft_version}-${placebo_version}")
-//    runtimeOnly fg.deobf("maven.modrinth:mmmmmmmmmmmm:kDOX4QqW")
+    // apotheosis dependency
+    implementation("top.theillusivec4.curios:curios-neoforge:9.2.2+1.21.1")
+
+    implementation("dev.shadowsoffire:Apotheosis:${minecraft_version}-${apoth_version}")
+    implementation("dev.shadowsoffire:ApothicAttributes:${minecraft_version}-${apoth_attributes_version}")
+    implementation("dev.shadowsoffire:Placebo:${minecraft_version}-${placebo_version}")
 
     // TaCZ
     if (USE_LOCAL_TACZ_V) {
-        implementation fg.deobf('libs:tacz-1.20.1:pr-1.1.4-all');
+        runtimeOnly('curse.maven:framework-549225:5911998');
+        implementation('libs:tacz-1.21.1:1.1.4-neoforge-all');
     } else {
-        implementation fg.deobf('curse.maven:timeless-and-classics-zero-1028108:6058563-sources-6059152');
+        implementation('curse.maven:timeless-and-classics-zero-1028108:6058563-sources-6059152');
     }
 
     // 前置
-    implementation(jarJar(fg.deobf('mod.chloeprime:gunsmithlib:2.+'))) {
+    implementation(jarJar('mod.chloeprime:gunsmithlib:2.+')) {
         jarJar.ranged(it, "[2.0,)")
     }
 
-    // MixinExtras
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")) {
-        jarJar.ranged(it, "[0.4.1,)")
-    }
-
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    // 假人，测试近战伤害
+    runtimeOnly("curse.maven:selene-499980:5983849")
+    runtimeOnly("curse.maven:mmmmmmmmmmmm-225738:5779508")
+    // 测试，检验NBT标签
+    runtimeOnly("curse.maven:nbtedit-reborn-678133:5660976")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -226,7 +192,6 @@ dependencies {
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
             minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
             loader_version_range: loader_version_range,
             mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
             mod_authors: mod_authors, mod_description: mod_description,
@@ -235,7 +200,7 @@ tasks.named('processResources', ProcessResources).configure {
 
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }}
 
@@ -253,9 +218,6 @@ tasks.named('jar', Jar).configure {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
-
-    // This is the preferred method to reobfuscate your jar file
-    finalizedBy 'reobfJar'
 }
 
 jarJar.enable()

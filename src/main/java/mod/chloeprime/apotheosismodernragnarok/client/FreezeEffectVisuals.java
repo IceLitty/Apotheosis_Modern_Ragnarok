@@ -8,18 +8,19 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import org.joml.Vector3f;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public class FreezeEffectVisuals {
     public static final Supplier<RenderType> MATERIAL = Suppliers.memoize(
-            () -> RenderType.entityTranslucent(new ResourceLocation("minecraft", "textures/block/blue_ice.png"))
+            () -> RenderType.entityTranslucent(ResourceLocation.fromNamespaceAndPath("minecraft", "textures/block/blue_ice.png"))
     );
 
     @SubscribeEvent
@@ -27,7 +28,7 @@ public class FreezeEffectVisuals {
         var attributes = event.getEntity().getAttributes();
         var isFrozen = Optional.ofNullable(attributes.getInstance(Attributes.MOVEMENT_SPEED))
                 .map(instance -> instance.getModifier(FreezeEffect.SPEED_MODIFIER_UUID))
-                .filter(modifier -> modifier.getAmount() <= -1)
+                .filter(modifier -> modifier.amount() <= -1)
                 .isPresent();
         if (!isFrozen) {
             return;
@@ -59,13 +60,13 @@ public class FreezeEffectVisuals {
             var nx = normals[(i / 4) * 3];
             var ny = normals[(i / 4) * 3 + 1];
             var nz = normals[(i / 4) * 3 + 2];
-            builder.vertex(pose, x, y, z)
-                    .color(255, 255, 255, 128)
-                    .uv(u, v)
-                    .overlayCoords(OverlayTexture.NO_OVERLAY)
-                    .uv2(packedLight)
-                    .normal(norm, nx, ny, nz)
-                    .endVertex();
+            Vector3f transform = norm.transform(new Vector3f(nx, ny, nz));
+            builder.addVertex(pose, x, y, z)
+                    .setColor(255, 255, 255, 128)
+                    .setUv(u, v)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(packedLight)
+                    .setNormal(transform.x(), transform.y(), transform.z());
         }
     }
 
