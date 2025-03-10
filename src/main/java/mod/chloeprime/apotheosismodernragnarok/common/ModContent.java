@@ -104,7 +104,7 @@ public class ModContent {
     }
 
     public static void setup() {
-        ExtraLootCategories.init();
+//        ExtraLootCategories.init(); // move to newer version
         GemInjectionRegistry.INSTANCE.registerToBus();
         AffixRegistry.INSTANCE.registerCodec(loc("bullet_saver"), BulletSaverAffix.CODEC);
         AffixRegistry.INSTANCE.registerCodec(loc("armor_squash"), ArmorSquashAffix.CODEC);

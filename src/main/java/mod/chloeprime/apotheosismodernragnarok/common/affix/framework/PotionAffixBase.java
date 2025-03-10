@@ -24,6 +24,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -92,7 +93,7 @@ public abstract class PotionAffixBase extends AffixBaseUtility implements GunAff
     }
 
     @Override
-    public void onArrowImpact(float level, LootRarity rarity, AbstractArrow arrow, HitResult res, HitResult.Type type) {
+    public void onProjectileImpact(float level, LootRarity rarity, Projectile arrow, HitResult res, HitResult.Type type) {
         if (this.target == Target.ARROW_SELF) {
             if (arrow.getOwner() instanceof LivingEntity owner) {
                 this.applyEffect(owner, rarity, level);

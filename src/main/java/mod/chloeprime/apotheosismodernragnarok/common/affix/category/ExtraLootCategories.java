@@ -6,6 +6,7 @@ import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import mod.chloeprime.apotheosismodernragnarok.ApotheosisModernRagnarok;
 import mod.chloeprime.apotheosismodernragnarok.common.CommonConfig;
+import mod.chloeprime.apotheosismodernragnarok.common.util.mixin.LootCategoryRegister;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.ItemStack;
 
@@ -55,7 +56,8 @@ public class ExtraLootCategories {
     private static final Set<LootCategory> ALL_GUNS = new LinkedHashSet<>(8);
 
     private static LootCategory register(String path, Predicate<ItemStack> predicate, EquipmentSlotGroup slots, boolean isGun) {
-        var registered = LootCategory.register(null, ApotheosisModernRagnarok.loc(path).toString(), predicate, slots);
+//        var registered = Apoth.LootCategories.register(ApotheosisModernRagnarok.loc(path).toString(), predicate, slots); TODO test it
+        var registered = LootCategoryRegister.reg(ApotheosisModernRagnarok.loc(path).toString(), predicate, slots);
         if (isGun) {
             ALL_GUNS.add(registered);
         }

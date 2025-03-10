@@ -12,8 +12,8 @@
       "gem_class": {
         "key": "light_weapon",
         "types": [
-          "melee_weapon",
-          "trident"
+          "apotheosis:melee_weapon",
+          "apotheosis:trident"
         ]
       },
       "modifiers": [
@@ -87,10 +87,10 @@
       "gem_class": {
         "key": "armor",
         "types": [
-          "helmet",
-          "chestplate",
-          "leggings",
-          "boots"
+          "apotheosis:helmet",
+          "apotheosis:chestplate",
+          "apotheosis:leggings",
+          "apotheosis:boots"
         ]
       },
       "modifiers": [
@@ -126,7 +126,7 @@
       "gem_class": {
         "key": "weapon_or_tool",
         "types": [
-          "breaker"
+          "apotheosis:breaker"
         ]
       },
       "enchantment": "unbreaking",

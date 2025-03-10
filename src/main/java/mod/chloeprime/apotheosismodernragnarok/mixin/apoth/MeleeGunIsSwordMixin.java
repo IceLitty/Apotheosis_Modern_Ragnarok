@@ -1,6 +1,7 @@
 package mod.chloeprime.apotheosismodernragnarok.mixin.apoth;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import mod.chloeprime.apotheosismodernragnarok.common.affix.category.GunPredicate;
 import net.minecraft.world.item.ItemStack;
@@ -13,14 +14,15 @@ import org.spongepowered.asm.mixin.injection.Slice;
 public class MeleeGunIsSwordMixin {
     @ModifyExpressionValue(
             method = "forItem",
-            at = @At(value = "INVOKE", ordinal = 0, target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"),
+            at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/core/DefaultedRegistry;getData(Lnet/neoforged/neoforge/registries/datamaps/DataMapType;Lnet/minecraft/resources/ResourceKey;)Ljava/lang/Object;"),
             slice = @Slice(
-                    from = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Ldev/shadowsoffire/apotheosis/AdventureConfig;TYPE_OVERRIDES:Ljava/util/Map;"),
+                    from = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/core/registries/BuiltInRegistries;ITEM:Lnet/minecraft/core/DefaultedRegistry;"),
                     to = @At("TAIL")
-            ))
+            )
+    )
     private static Object overrideLootCategory(Object original, ItemStack item) {
         if (original == null && GunPredicate.isMeleeGun(item)) {
-            return LootCategory.MELEE_WEAPON;
+            return Apoth.LootCategories.MELEE_WEAPON;
         }
         return original;
     }
